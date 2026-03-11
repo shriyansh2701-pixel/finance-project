@@ -97,14 +97,14 @@ class BankPolicyTool(BaseTool):
 @st.cache_resource
 def create_crew(api_key):
     # Securely use the API key passed from the sidebar
-    os.environ["AIzaSyBiwgmdDcnNgdZ9m_Sn88j0vjPVeQIAv2I"] = api_key
-    my_llm = LLM(model="gemini/gemini-2.5-flash", api_key=api_key)
+   api_key = os.environ.get("GEMINI_API_KEY")
+   my_llm = LLM(model="gemini/gemini-2.5-flash", api_key=api_key)
 
-    triage = Agent(role='Triage', goal='Classify urgency.', backstory='Bank Manager.', llm=my_llm)
-    analyst = Agent(role='Analyst', goal='Extract data.', backstory='Data extractor.', llm=my_llm)
-    writer = Agent(role='Support Lead', goal='Draft response.', backstory='Support Agent.', llm=my_llm, tools=[BankPolicyTool()])
+   triage = Agent(role='Triage', goal='Classify urgency.', backstory='Bank Manager.', llm=my_llm)
+   analyst = Agent(role='Analyst', goal='Extract data.', backstory='Data extractor.', llm=my_llm)
+   writer = Agent(role='Support Lead', goal='Draft response.', backstory='Support Agent.', llm=my_llm, tools=[BankPolicyTool()])
     
-    return triage, analyst, writer
+   return triage, analyst, writer
 
 # 5. MAIN INTERFACE
 if selected_email_data:

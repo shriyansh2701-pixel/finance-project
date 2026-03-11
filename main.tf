@@ -8,6 +8,7 @@ resource "aws_security_group" "ai_sg" {
     description = "Allow web traffic to our AI app"
 
     ingress {
+        description = "Allow Streamlit UI"
         from_port   = 8501
         to_port     = 8501
         protocol    = "tcp"
@@ -32,7 +33,8 @@ resource "aws_security_group" "ai_sg" {
 # 2. Rent the Server and give it a Startup Script
 resource "aws_instance" "ai_server" {
     ami            = "ami-0c7217cdde317cfec" # Ubuntu 22.04
-    instance_type  = "t2.micro" # Free tier eligible!
+    instance_type  = "t3.micro" # Free tier eligible!
+    key_name      = aws_key_pair.github_deploy_key.key_name
     vpc_security_group_ids = [aws_security_group.ai_sg.id]
 
     # This script runs the moment the server turns on
@@ -45,7 +47,7 @@ resource "aws_instance" "ai_server" {
                 
                 # Download your code from GitHub and run it!
                 # IMPORTANT: Replace the URL below with YOUR actual GitHub repository link
-                git clone https://github.com/YourUsername/finance-project.git
+                git clone https://github.com/shriyansh2701-pixel/finance-project.git
                 cd finance-project
                 sudo docker build -t ai-agent .
                 sudo docker run -d -p 8501:8501 ai-agent
@@ -54,4 +56,8 @@ resource "aws_instance" "ai_server" {
     tags = {
         Name = "AI-Inbox-Manager"
     }              
+}
+resource "aws_key_pair" "github_deploy_key" {
+  key_name   = "finance-app-deploy-key"
+  public_key = file("${path.module}/deploy_key.pub")
 }

@@ -16,15 +16,15 @@ jobs:
     - name: SSH into AWS and Deploy
       uses: appleboy/ssh-action@master
       env:
-          GEMINI_KEY: ${{ secrets.GEMINI_API_KEY }}
+        GEMINI_KEY: ${{ secrets.GEMINI_API_KEY }} 
       with:
         host: ${{ secrets.EC2_HOST_IP }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
+        envs: GEMINI_KEY
         script: |
           cd finance-project
           git pull origin main
           sudo docker build -t ai-agent .
-          # Stop the old container before starting the new one
           sudo docker stop $(sudo docker ps -q) || true
-          sudo docker run -d -p 8501:8501 ai-agent
+          sudo docker run -d -p 8501:8501 -e GEMINI_API_KEY=$GEMINI_KEY ai-agent

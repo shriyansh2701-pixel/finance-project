@@ -34,17 +34,17 @@ def get_unread_emails(username, password, limit=5):
                     msg = email.message_from_bytes(response_part[1])
                     subject, encoding = decode_header(msg["Subject"])[0]
                     if isinstance(subject, bytes):
-                        subject = subject.decode(encoding if encoding else "utf-8")
+                        subject = subject.decode(encoding if encoding else "utf-8", errors='replace')
                     
                     sender = msg.get("From")
                     body = ""
                     if msg.is_multipart():
                         for part in msg.walk():
                             if part.get_content_type() == "text/plain":
-                                body = part.get_payload(decode=True).decode()
+                                body = part.get_payload(decode=True).decode('utf-8', errors='replace')
                                 break
                     else:
-                        body = msg.get_payload(decode=True).decode()
+                        body = msg.get_payload(decode=True).decode('utf-8', errors='replace')
                     
                     email_list.append({"subject": subject, "sender": sender, "body": body})
         return email_list

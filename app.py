@@ -97,7 +97,7 @@ class BankPolicyTool(BaseTool):
 @st.cache_resource
 def create_crew(api_key):
     # Securely use the API key passed from the sidebar
-   api_key = os.environ.get("GEMINI_API_KEY")
+   os.environ["GEMINI_API_KEY"] = api_key
    my_llm = LLM(model="gemini/gemini-2.5-flash", api_key=api_key)
 
    triage = Agent(role='Triage', goal='Classify urgency.', backstory='Bank Manager.', llm=my_llm)
